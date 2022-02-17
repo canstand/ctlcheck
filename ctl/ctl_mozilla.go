@@ -70,8 +70,7 @@ func (ctl *MozillaCTL) parseIncludedCSV(body []byte) error {
 		ctl.Trusted[sha256] = name
 	}
 	ctl.ChecksumIncluded = checksum
-	now := time.Now()
-	ctl.UpdatedAt = &now
+	ctl.UpdatedAt = time.Now()
 
 	return nil
 }
@@ -93,8 +92,7 @@ func (ctl *MozillaCTL) parseRemovedCSV(body []byte) error {
 		ctl.Removed[sha256] = name
 	}
 	ctl.ChecksumRemoved = checksum
-	now := time.Now()
-	ctl.UpdatedAt = &now
+	ctl.UpdatedAt = time.Now()
 
 	return nil
 }

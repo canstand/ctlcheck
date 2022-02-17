@@ -76,3 +76,10 @@ func (s *CertStore) AppendCertsFromPEM(pemCerts []byte) (ok bool) {
 
 	return ok
 }
+
+func (s *CertStore) contains(cert *x509.Certificate) bool {
+	if s == nil {
+		return false
+	}
+	return s.haveSum[sha256.Sum256(cert.Raw)]
+}

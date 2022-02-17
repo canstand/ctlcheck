@@ -1,6 +1,7 @@
 package app
 
 import (
+	"crypto/x509/pkix"
 	"flag"
 	"fmt"
 	"os"
@@ -30,6 +31,7 @@ func CLI(args []string) error {
 
 func (app *appEnv) ParseArgs(args []string) error {
 	fl := flag.NewFlagSet(AppName, flag.ContinueOnError)
+	app.AppleCTL = ctl.NewAppleCTL()
 	app.MozillaCTL = ctl.NewMozillaCTL()
 	app.Allow = ctl.Items{}
 
@@ -46,7 +48,7 @@ func (app *appEnv) ParseArgs(args []string) error {
 	fl.Usage = func() {
 		fmt.Fprintf(fl.Output(), `ctlcheck - %s
 
-A utility to check the certificate trust list (CTL) of the linux system
+A utility to check the certificate trust list (CTL)
 
 Usage:
   ctlcheck [options]
@@ -70,6 +72,7 @@ Options:
 }
 
 type appEnv struct {
+	AppleCTL   *ctl.AppleCTL   `yaml:"apple_ctl,omitempty"`
 	MozillaCTL *ctl.MozillaCTL `yaml:"mozilla_ctl,omitempty"`
 	Allow      ctl.Items       `yaml:"allow,omitempty"`
 	offline    bool            `yaml:"-"`
@@ -88,14 +91,21 @@ func (app *appEnv) Exec() (err error) {
 		}
 	} else {
 		_ = app.Load("ctlcheck.yml") // load allow items if file exist
-		spinnerLoading.UpdateText("Fetch CTL from CCADB")
+
+		spinnerLoading.UpdateText("Fetch CTL...")
+
+		err = app.AppleCTL.FetchApple()
+		if err != nil {
+			spinnerLoading.Fail(err)
+			return err
+		}
 		err = app.MozillaCTL.FetchMozilla()
 		if err != nil {
 			spinnerLoading.Fail(err)
 			return err
 		}
 		if app.save {
-			spinnerLoading.UpdateText("Fetch CTL from CCADB, save to file")
+			spinnerLoading.UpdateText("Fetch CTL..., save to file")
 			err = app.Save("ctlcheck.yml")
 			if err != nil {
 				spinnerLoading.Fail(err)
@@ -110,7 +120,7 @@ func (app *appEnv) Exec() (err error) {
 		pterm.PrintOnErrorf("load system root CAs failed: %v", err)
 		return err
 	}
-	results := app.MozillaCTL.Verify(roots.Certs, app.Allow)
+	results := app.verify(roots.Certs, app.Allow)
 	Output(results)
 
 	return err
@@ -152,11 +162,23 @@ func output(title, desc string, certs []*ctl.Cert) {
 			}
 			return txt
 		},
+		"pkixName": func(n pkix.Name) string {
+			if len(n.CommonName) > 0 {
+				return n.CommonName
+			}
+			if len(n.OrganizationalUnit) > 0 {
+				return n.OrganizationalUnit[0]
+			}
+			if len(n.Organization) > 0 {
+				return n.Organization[0]
+			}
+			return n.String()
+		},
 	}).Parse(`
 {{- range . -}}
 SHA256:	{{ .Checksum }}
-  Subject:    {{ if .Subject.CommonName }}{{ .Subject.CommonName }}{{ else }}{{ index .Subject.OrganizationalUnit 0 }}{{ end }}
-  Issuer:     {{ if .Issuer.CommonName }}{{ .Issuer.CommonName }}{{ else }}{{ index .Issuer.OrganizationalUnit 0 }}{{ end }}
+  Subject:    {{ .Subject | pkixName }}
+  Issuer:     {{ .Issuer | pkixName }}
   Valid from: {{ .NotBefore.Format "2006-01-02T15:04:05Z" }}
           to: {{ .NotAfter | redIfNotExpired }}
 {{ end -}}

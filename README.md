@@ -1,9 +1,9 @@
 # ctlcheck [![GoDoc](https://godoc.org/github.com/canstand/ctlcheck?status.svg)](https://godoc.org/github.com/canstand/ctlcheck) [![Go Report Card](https://goreportcard.com/badge/github.com/canstand/ctlcheck)](https://goreportcard.com/report/github.com/canstand/ctlcheck)
 
-A utility to check the certificate trust list (CTL) of the linux system.
+A utility to check the certificate trust list (CTL).
 
-- Compare the differences between the current system CAs and the latest data from [CCADB](https://www.ccadb.org/)
-- Shows certificates that have been removed by the vendor (Mozilla), and unknown certificates 
+- Compare the differences between the current system CAs and the latest data from [CCADB](https://www.ccadb.org/) (or [Apple](https://support.apple.com/en-us/HT209143))
+- Shows certificates that have been removed by the vendor (Mozilla, Apple, etc.), and unknown certificates 
 - Self-signed or company root certificates can be added to the allow list
 
 ![ctlcheck snapshot](snapshot.png)

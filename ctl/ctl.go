@@ -11,9 +11,9 @@ const (
 )
 
 type CTL struct {
-	UpdatedAt *time.Time `yaml:"updated_at,omitempty"`
-	Trusted   Items      `yaml:"trusted"`
-	Removed   Items      `yaml:"removed,omitempty"`
+	UpdatedAt time.Time `yaml:"updated_at,omitempty"`
+	Trusted   Items     `yaml:"trusted"`
+	Removed   Items     `yaml:"removed,omitempty"`
 }
 
 // Items maps from sum256(cert.Raw) to subject name.
