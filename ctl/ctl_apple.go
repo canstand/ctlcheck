@@ -25,7 +25,23 @@ func NewAppleCTL() *AppleCTL {
 	}
 }
 
-func (ctl *AppleCTL) FetchApple() error {
+// Verify that the specified certificate is included in the CTL or has been removed
+func (ctl *AppleCTL) Verify(certs []*Cert, allowedCerts Entrys) *VerifyResult {
+	ret := VerifyResult{
+		Total:        len(certs),
+		TrustedCerts: []*Cert{},
+		AllowedCerts: []*Cert{},
+		allowedDesc:  "Allow by yourself in the config file.\n",
+		RemovedCerts: []*Cert{},
+		removedDesc:  "See https://support.apple.com/en-us/HT209143\n",
+		UnknownCerts: []*Cert{},
+		unknownDesc:  "",
+	}
+	ctl.verify(certs, allowedCerts, &ret)
+	return &ret
+}
+
+func (ctl *AppleCTL) Fetch() error {
 	doc, err := htmlquery.LoadURL(AppleKBURL)
 	if err != nil {
 		return err
@@ -57,25 +73,25 @@ func (ctl *AppleCTL) fetchData(link string) error {
 		return err
 	}
 	rows := parseTable(page, "//h2[@id='trusted']/following-sibling::div//table//th", "//h2[@id='trusted']/following-sibling::div//table//tr[position()>1]")
-	ctl.Trusted = extractItems(rows)
+	ctl.Trusted = extractEntrys(rows)
 	if len(ctl.Trusted) == 0 {
 		return fmt.Errorf("can not find data table in the page")
 	}
 	rows = parseTable(page, "//h2[@id='blocked']/following-sibling::div//table//th", "//h2[@id='blocked']/following-sibling::div//table//tr[position()>1]")
-	ctl.Removed = extractItems(rows)
+	ctl.Removed = extractEntrys(rows)
 	ctl.UpdatedAt = time.Now()
 	return nil
 }
 
-func extractItems(rows []map[string]string) Items {
-	items := Items{}
+func extractEntrys(rows []map[string]string) Entrys {
+	entrys := Entrys{}
 	for _, v := range rows {
 		fingerprint := strings.ToUpper(strings.ReplaceAll(v["Fingerprint (SHA-256)"], " ", ""))
 		if fingerprint != "" {
-			items[fingerprint] = v["Certificate name"]
+			entrys[fingerprint] = v["Certificate name"]
 		}
 	}
-	return items
+	return entrys
 }
 
 func parseTable(top *html.Node, thExpr, trExpr string) []map[string]string {

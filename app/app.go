@@ -1,12 +1,9 @@
 package app
 
 import (
-	"crypto/x509/pkix"
 	"flag"
 	"fmt"
 	"os"
-	"text/template"
-	"time"
 
 	"github.com/canstand/ctlcheck/ctl"
 	"github.com/carlmjohnson/flagext"
@@ -33,7 +30,7 @@ func (app *appEnv) ParseArgs(args []string) error {
 	fl := flag.NewFlagSet(AppName, flag.ContinueOnError)
 	app.AppleCTL = ctl.NewAppleCTL()
 	app.MozillaCTL = ctl.NewMozillaCTL()
-	app.Allow = ctl.Items{}
+	app.Allow = ctl.Entrys{}
 
 	var (
 		offline bool
@@ -74,7 +71,7 @@ Options:
 type appEnv struct {
 	AppleCTL   *ctl.AppleCTL   `yaml:"apple_ctl,omitempty"`
 	MozillaCTL *ctl.MozillaCTL `yaml:"mozilla_ctl,omitempty"`
-	Allow      ctl.Items       `yaml:"allow,omitempty"`
+	Allow      ctl.Entrys      `yaml:"allow,omitempty"`
 	offline    bool            `yaml:"-"`
 	save       bool            `yaml:"-"`
 }
@@ -94,12 +91,7 @@ func (app *appEnv) Exec() (err error) {
 
 		spinnerLoading.UpdateText("Fetch CTL...")
 
-		err = app.AppleCTL.FetchApple()
-		if err != nil {
-			spinnerLoading.Fail(err)
-			return err
-		}
-		err = app.MozillaCTL.FetchMozilla()
+		err = app.fetchCtl()
 		if err != nil {
 			spinnerLoading.Fail(err)
 			return err
@@ -121,70 +113,11 @@ func (app *appEnv) Exec() (err error) {
 		return err
 	}
 	results := app.verify(roots.Certs, app.Allow)
-	Output(results)
+
+	pterm.DefaultSection.WithLevel(2).Print("System Root CA")
+	pterm.Print(results.ConsoleReport())
 
 	return err
-}
-
-func Output(certs *ctl.VerifyResult) {
-	var (
-		countTrusted = len(certs.TrustedCerts)
-		countRemoved = len(certs.RemovedCerts)
-		countAllowed = len(certs.AllowedCerts)
-		countUnknown = len(certs.UnknownCerts)
-	)
-	pterm.DefaultSection.WithLevel(2).Print("Summary")
-	pterm.DefaultTable.WithHasHeader().WithRightAlignment().WithData(
-		pterm.TableData{
-			{"Total", "Trust", "Allow", "Removal", "Unknown"},
-			{fmt.Sprint(certs.Total), fmt.Sprint(countTrusted), fmt.Sprint(countAllowed), fmt.Sprint(countRemoved), fmt.Sprint(countUnknown)},
-		}).Render()
-
-	output("Allowed Certificates", "Allow by yourself in the config file.\n", certs.AllowedCerts)
-	output("Removed Certificates", "Use SHA256 to find the reason for removal (Removal Bug No. or Date) in: \nhttps://ccadb-public.secure.force.com/mozilla/RemovedCACertificateReport\n", certs.RemovedCerts)
-	output("Unknown Certificates", "", certs.UnknownCerts)
-}
-
-func output(title, desc string, certs []*ctl.Cert) {
-	if len(certs) < 1 {
-		return
-	}
-	pterm.DefaultSection.WithLevel(2).Print(title)
-	if desc != "" {
-		pterm.ThemeDefault.InfoMessageStyle.Println(desc)
-	}
-
-	t := template.Must(template.New("").Funcs(template.FuncMap{
-		"redIfNotExpired": func(t time.Time) string {
-			txt := t.Format("2006-01-02T15:04:05Z")
-			if t.After(time.Now()) {
-				txt = pterm.Red(txt)
-			}
-			return txt
-		},
-		"pkixName": func(n pkix.Name) string {
-			if len(n.CommonName) > 0 {
-				return n.CommonName
-			}
-			if len(n.OrganizationalUnit) > 0 {
-				return n.OrganizationalUnit[0]
-			}
-			if len(n.Organization) > 0 {
-				return n.Organization[0]
-			}
-			return n.String()
-		},
-	}).Parse(`
-{{- range . -}}
-SHA256:	{{ .Checksum }}
-  Subject:    {{ .Subject | pkixName }}
-  Issuer:     {{ .Issuer | pkixName }}
-  Valid from: {{ .NotBefore.Format "2006-01-02T15:04:05Z" }}
-          to: {{ .NotAfter | redIfNotExpired }}
-{{ end -}}
-	`))
-	err := t.Execute(os.Stdout, &certs)
-	pterm.PrintOnError(err)
 }
 
 // Save as yaml file

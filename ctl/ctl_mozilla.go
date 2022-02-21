@@ -29,8 +29,24 @@ func NewMozillaCTL() *MozillaCTL {
 	}
 }
 
+// Verify that the specified certificate is included in the CTL or has been removed
+func (ctl *MozillaCTL) Verify(certs []*Cert, allowedCerts Entrys) *VerifyResult {
+	ret := VerifyResult{
+		Total:        len(certs),
+		TrustedCerts: []*Cert{},
+		AllowedCerts: []*Cert{},
+		allowedDesc:  "Allow by yourself in the config file.\n",
+		RemovedCerts: []*Cert{},
+		removedDesc:  "Use SHA256 to find the reason for removal (Removal Bug No. or Date) in: \nhttps://ccadb-public.secure.force.com/mozilla/RemovedCACertificateReport\n",
+		UnknownCerts: []*Cert{},
+		unknownDesc:  "",
+	}
+	ctl.verify(certs, allowedCerts, &ret)
+	return &ret
+}
+
 // Fetch Mozilla's CA certificate report from https://www.ccadb.org
-func (ctl *MozillaCTL) FetchMozilla() error {
+func (ctl *MozillaCTL) Fetch() error {
 	if ctl.CTL == nil {
 		ctl.CTL = NewCTL()
 	}

@@ -10,8 +10,8 @@ type sum256 [sha256.Size]byte
 
 // Cert adds Checksum field to x509.Cerificate to store SHA256
 type Cert struct {
-	*x509.Certificate
-	Checksum string
+	*x509.Certificate `json:"_"`
+	Checksum          string `json:"checksum,omitempty"`
 }
 
 // CertStore is a set of certificates.
