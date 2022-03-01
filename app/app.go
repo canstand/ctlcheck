@@ -29,6 +29,7 @@ func CLI(args []string) error {
 func (app *appEnv) ParseArgs(args []string) error {
 	fl := flag.NewFlagSet(AppName, flag.ContinueOnError)
 	app.AppleCTL = ctl.NewAppleCTL()
+	app.MicrosoftCTL = ctl.NewMicrosoftCTL()
 	app.MozillaCTL = ctl.NewMozillaCTL()
 	app.Allow = ctl.Entrys{}
 
@@ -69,11 +70,12 @@ Options:
 }
 
 type appEnv struct {
-	AppleCTL   *ctl.AppleCTL   `yaml:"apple_ctl,omitempty"`
-	MozillaCTL *ctl.MozillaCTL `yaml:"mozilla_ctl,omitempty"`
-	Allow      ctl.Entrys      `yaml:"allow,omitempty"`
-	offline    bool            `yaml:"-"`
-	save       bool            `yaml:"-"`
+	AppleCTL     *ctl.AppleCTL     `yaml:"apple_ctl,omitempty"`
+	MicrosoftCTL *ctl.MicrosoftCTL `yaml:"micrsoft_ctl,omitempty"`
+	MozillaCTL   *ctl.MozillaCTL   `yaml:"mozilla_ctl,omitempty"`
+	Allow        ctl.Entrys        `yaml:"allow,omitempty"`
+	offline      bool              `yaml:"-"`
+	save         bool              `yaml:"-"`
 }
 
 func (app *appEnv) Exec() (err error) {

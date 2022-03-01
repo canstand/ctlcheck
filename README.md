@@ -2,8 +2,8 @@
 
 A utility to check the certificate trust list (CTL).
 
-- Compare the differences between the current system CAs and the latest data from [CCADB](https://www.ccadb.org/) (or [Apple](https://support.apple.com/en-us/HT209143))
-- Shows certificates that have been removed by the vendor (Mozilla, Apple, etc.), and unknown certificates 
+- Compare the differences between the current system CAs and the latest data from [CCADB](https://www.ccadb.org/) (or [Apple](https://support.apple.com/en-us/HT209143), etc.)
+- Shows certificates that have been removed by the vendor (Mozilla, Apple, Microsoft, etc.), and unknown certificates 
 - Self-signed or company root certificates can be added to the allow list
 
 ![ctlcheck snapshot](snapshot.png)
@@ -40,3 +40,11 @@ Options:
   -save
         save data to ctlcheck.yml
 ```
+
+## Notes
+
+### For Windows
+**Why are there several Removed Certificates reported in normal Windows OS?**
+
+* The CTL is based on [CCADB](https://ccadb-public.secure.force.com/microsoft/IncludedCACertificateReportForMSFT) data, and then complements several missing Microsoft built-in certificates from [authroot.stl](http://ctldl.windowsupdate.com/msdownload/update/v3/static/trustedr/en/authroot.stl). 
+* Some certificates are included in authroot.stl, but the "Microsoft Status" has been marked as **Disable** or other status in [CCADB](https://ccadb-public.secure.force.com/microsoft/IncludedCACertificateReportForMSFT).
