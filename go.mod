@@ -1,28 +1,31 @@
 module github.com/canstand/ctlcheck
 
-go 1.17
+go 1.20
 
 require (
-	github.com/antchfx/htmlquery v1.2.4
+	github.com/antchfx/htmlquery v1.3.0
 	github.com/carlmjohnson/exitcode v0.20.2
 	github.com/carlmjohnson/flagext v0.22.1
-	github.com/carlmjohnson/requests v0.22.1
-	github.com/carlmjohnson/versioninfo v0.21.1
+	github.com/carlmjohnson/requests v0.23.2
+	github.com/carlmjohnson/versioninfo v0.22.4
 	github.com/github/smimesign v0.2.0
-	github.com/pterm/pterm v0.12.37
-	golang.org/x/net v0.0.0-20220225172249-27dd8689420f
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+	github.com/pterm/pterm v0.12.54
+	golang.org/x/net v0.6.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
-	github.com/antchfx/xpath v1.2.0 // indirect
-	github.com/atomicgo/cursor v0.0.1 // indirect
+	atomicgo.dev/cursor v0.1.1 // indirect
+	atomicgo.dev/keyboard v0.2.9 // indirect
+	github.com/antchfx/xpath v1.2.3 // indirect
+	github.com/containerd/console v1.0.3 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	github.com/gookit/color v1.5.0 // indirect
-	github.com/mattn/go-runewidth v0.0.13 // indirect
-	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
-	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
-	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
-	golang.org/x/text v0.3.7 // indirect
+	github.com/gookit/color v1.5.2 // indirect
+	github.com/lithammer/fuzzysearch v1.1.5 // indirect
+	github.com/mattn/go-runewidth v0.0.14 // indirect
+	github.com/rivo/uniseg v0.4.3 // indirect
+	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
+	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/term v0.5.0 // indirect
+	golang.org/x/text v0.7.0 // indirect
 )
