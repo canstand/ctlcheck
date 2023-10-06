@@ -72,12 +72,12 @@ func (ctl *AppleCTL) fetchData(link string) error {
 	if err != nil {
 		return err
 	}
-	rows := parseTable(page, "//h2[text()='Trusted Certificates']/following-sibling::div//table//th", "//h2[text()='Trusted Certificates']/following-sibling::div//table//tr[position()>1]")
+	rows := parseTable(page, "//h2[@id='trusted']/following-sibling::div//table//th", "//h2[@id='trusted']/following-sibling::div//table//tr[position()>1]")
 	ctl.Trusted = extractEntrys(rows)
 	if len(ctl.Trusted) == 0 {
 		return fmt.Errorf("can not find data table in the page")
 	}
-	rows = parseTable(page, "//h2[text()='Blocked Certificates']/following-sibling::div//table//th", "//h2[text()='Blocked Certificates']/following-sibling::div//table//tr[position()>1]")
+	rows = parseTable(page, "//h2[@id='blocked']/following-sibling::div//table//th", "//h2[@id='blocked']/following-sibling::div//table//tr[position()>1]")
 	ctl.Removed = extractEntrys(rows)
 	ctl.UpdatedAt = time.Now()
 	return nil
