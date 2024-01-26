@@ -72,12 +72,14 @@ func (ctl *AppleCTL) fetchData(link string) error {
 	if err != nil {
 		return err
 	}
-	rows := parseTable(page, "//h2[@id='trusted']/following-sibling::div//table//th", "//h2[@id='trusted']/following-sibling::div//table//tr[position()>1]")
+	xpathTrusted := "//h2[@id='trusted' or text()='Trusted Certificates' or text()='Trusted certificates']/following-sibling::div[1]//table"
+	rows := parseTable(page, fmt.Sprintf("%s//th", xpathTrusted), fmt.Sprintf("%s//tr[position()>1]", xpathTrusted))
 	ctl.Trusted = extractEntrys(rows)
 	if len(ctl.Trusted) == 0 {
 		return fmt.Errorf("can not find data table in the page")
 	}
-	rows = parseTable(page, "//h2[@id='blocked']/following-sibling::div//table//th", "//h2[@id='blocked']/following-sibling::div//table//tr[position()>1]")
+	xpathBlocked := "//h2[@id='blocked' or text()='Blocked Certificates' or text()='Blocked certificates']/following-sibling::div[1]//table"
+	rows = parseTable(page, fmt.Sprintf("%s//th", xpathBlocked), fmt.Sprintf("%s//tr[position()>1]", xpathBlocked))
 	ctl.Removed = extractEntrys(rows)
 	ctl.UpdatedAt = time.Now()
 	return nil
@@ -85,10 +87,12 @@ func (ctl *AppleCTL) fetchData(link string) error {
 
 func extractEntrys(rows []map[string]string) Entrys {
 	entrys := Entrys{}
+	fpKey := strings.ToUpper("Fingerprint (SHA-256)")
+	certNameKey := strings.ToUpper("Certificate name")
 	for _, v := range rows {
-		fingerprint := strings.ToUpper(strings.ReplaceAll(v["Fingerprint (SHA-256)"], " ", ""))
+		fingerprint := strings.ToUpper(strings.ReplaceAll(v[fpKey], " ", ""))
 		if fingerprint != "" {
-			entrys[fingerprint] = v["Certificate name"]
+			entrys[fingerprint] = v[certNameKey]
 		}
 	}
 	return entrys
@@ -103,7 +107,7 @@ func parseTable(top *html.Node, thExpr, trExpr string) []map[string]string {
 	}
 	headers := []string{}
 	for _, v := range thNodes {
-		headers = append(headers, strings.TrimSpace(htmlquery.InnerText(v)))
+		headers = append(headers, strings.ToUpper(strings.TrimSpace(htmlquery.InnerText(v))))
 	}
 	for _, v := range trNodes {
 		row := map[string]string{}

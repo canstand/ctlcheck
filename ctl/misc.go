@@ -58,7 +58,7 @@ func getChecksum(data []byte) string {
 
 // readUniqueDirectoryEntries is like os.ReadDir but omits
 // symlinks that point within the directory.
-func readUniqueDirectoryEntries(dir string) ([]fs.DirEntry, error) {
+func readUniqueDirectoryEntries(dir string) ([]fs.DirEntry, error) { //nolint:unused
 	files, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func readUniqueDirectoryEntries(dir string) ([]fs.DirEntry, error) {
 
 // isSameDirSymlink reports whether fi in dir is a symlink with a
 // target not containing a slash.
-func isSameDirSymlink(f fs.DirEntry, dir string) bool {
+func isSameDirSymlink(f fs.DirEntry, dir string) bool { //nolint:unused
 	if f.Type()&fs.ModeSymlink == 0 {
 		return false
 	}

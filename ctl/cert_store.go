@@ -77,7 +77,7 @@ func (s *CertStore) AppendCertsFromPEM(pemCerts []byte) (ok bool) {
 	return ok
 }
 
-func (s *CertStore) contains(cert *x509.Certificate) bool {
+func (s *CertStore) contains(cert *x509.Certificate) bool { //nolint:unused
 	if s == nil {
 		return false
 	}

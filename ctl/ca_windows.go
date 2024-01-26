@@ -10,12 +10,17 @@ import (
 
 func LoadSystemRoots() (*CertStore, error) {
 	const CRYPT_E_NOT_FOUND = 0x80092004
-
-	store, err := syscall.CertOpenSystemStore(0, syscall.StringToUTF16Ptr("ROOT"))
+	root, err := syscall.UTF16PtrFromString("ROOT")
 	if err != nil {
 		return nil, err
 	}
-	defer syscall.CertCloseStore(store, 0)
+	store, err := syscall.CertOpenSystemStore(0, root)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		_ = syscall.CertCloseStore(store, 0)
+	}()
 
 	roots := NewCertStore()
 	var cert *syscall.CertContext

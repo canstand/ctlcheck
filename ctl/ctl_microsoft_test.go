@@ -52,3 +52,14 @@ func Test_parseAuthroot(t *testing.T) {
 		})
 	}
 }
+
+func TestMicrosoftCTL_Fetch(t *testing.T) {
+	ctl := NewMicrosoftCTL()
+	err := ctl.Fetch()
+	if err != nil {
+		t.Errorf("MicrosoftCTL.Fetch() error = %v", err)
+	}
+	if len(ctl.CTL.Trusted) == 0 {
+		t.Errorf("MicrosoftCTL.Fetch() error = %v", "no trusted certs, may be parse error")
+	}
+}
