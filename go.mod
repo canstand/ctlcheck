@@ -7,7 +7,6 @@ require (
 	github.com/carlmjohnson/exitcode v0.20.2
 	github.com/carlmjohnson/flagext v0.22.1
 	github.com/carlmjohnson/requests v0.23.5
-	github.com/carlmjohnson/versioninfo v0.22.5
 	github.com/github/smimesign v0.2.0
 	github.com/pterm/pterm v0.12.76
 	golang.org/x/net v0.20.0

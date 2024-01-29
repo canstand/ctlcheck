@@ -72,7 +72,7 @@ func (ctl *MozillaCTL) Fetch() error {
 
 func (ctl *MozillaCTL) parseIncludedCSV(body []byte) error {
 	checksum := getChecksum(body)
-	if checksum == ctl.ChecksumIncluded { //no update
+	if checksum == ctl.ChecksumIncluded { // no update
 		return nil
 	}
 	c, err := csvReadToMap(bytes.NewReader(body))
@@ -93,7 +93,7 @@ func (ctl *MozillaCTL) parseIncludedCSV(body []byte) error {
 
 func (ctl *MozillaCTL) parseRemovedCSV(body []byte) error {
 	checksum := getChecksum(body)
-	if checksum == ctl.ChecksumRemoved { //no update
+	if checksum == ctl.ChecksumRemoved { // no update
 		return nil
 	}
 

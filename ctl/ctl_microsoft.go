@@ -62,7 +62,7 @@ func (ctl *MicrosoftCTL) Fetch() error {
 	}
 
 	hash := getChecksum(body)
-	if hash != ctl.CCADBChecksum { //updated
+	if hash != ctl.CCADBChecksum { // updated
 		c, err := csvReadToMap(bytes.NewReader(body))
 		if err != nil {
 			return fmt.Errorf("read csv file err: %w", err)
@@ -76,7 +76,7 @@ func (ctl *MicrosoftCTL) Fetch() error {
 			case "", "Example Root Case", "Example Root Certificate":
 				continue
 			default:
-				//https://docs.microsoft.com/en-us/security/trusted-root/deprecation
+				// https://docs.microsoft.com/en-us/security/trusted-root/deprecation
 				switch v["Microsoft Status"] {
 				case "Included", "NotBefore":
 					ctl.Trusted[sha256] = name

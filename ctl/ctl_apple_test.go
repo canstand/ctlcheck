@@ -3,7 +3,6 @@ package ctl
 import "testing"
 
 func TestAppleCTL_Fetch(t *testing.T) {
-
 	ctl := NewAppleCTL()
 	err := ctl.Fetch()
 	if err != nil {

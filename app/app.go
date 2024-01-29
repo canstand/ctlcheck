@@ -7,7 +7,6 @@ import (
 
 	"github.com/canstand/ctlcheck/ctl"
 	"github.com/carlmjohnson/flagext"
-	"github.com/carlmjohnson/versioninfo"
 	"github.com/pterm/pterm"
 	"gopkg.in/yaml.v3"
 )
@@ -52,7 +51,7 @@ Usage:
   ctlcheck [options]
 
 Options:
-`, versioninfo.Version)
+`, getAppVersion())
 		fl.PrintDefaults()
 	}
 	if err := fl.Parse(args); err != nil {
@@ -124,13 +123,12 @@ func (app *appEnv) Exec() (err error) {
 
 // Save as yaml file
 func (app *appEnv) Save(file string) error {
-
 	data, err := yaml.Marshal(app)
 	if err != nil {
 		return err
 	}
 
-	err = os.WriteFile(file, data, 0644)
+	err = os.WriteFile(file, data, 0o644)
 
 	return err
 }

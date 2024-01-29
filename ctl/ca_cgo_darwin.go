@@ -279,6 +279,7 @@ static int CopyPEMRootsCTX509(CFDataRef *pemRoots, CFDataRef *untrustedPemRoots,
 }
 */
 import "C"
+
 import (
 	"errors"
 	"os"
