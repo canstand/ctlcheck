@@ -50,8 +50,8 @@ func (ctl *AppleCTL) Fetch() error {
 	if nodeDate == nil {
 		return fmt.Errorf("can not find apple publish date")
 	}
-	date := htmlquery.SelectAttr(nodeDate, "datetime")
-	_, err = time.Parse("2006-01-02", date)
+	date := htmlquery.InnerText(nodeDate)
+	_, err = parseDate(date)
 	if err != nil {
 		return fmt.Errorf("can not parse apple publish date: %w", err)
 	}
@@ -59,7 +59,7 @@ func (ctl *AppleCTL) Fetch() error {
 		return nil // no update
 	}
 	ctl.PublishedDate = date
-	nodeLink := htmlquery.FindOne(doc, "//h2[text()='Current Trust Store']/following-sibling::div/p/a")
+	nodeLink := htmlquery.FindOne(doc, "//h2[text()='Current Trust Store']/following-sibling::*//a")
 	if nodeLink == nil {
 		return fmt.Errorf("can not find apple publish link")
 	}

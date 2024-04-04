@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/carlmjohnson/requests"
 )
@@ -80,4 +81,18 @@ func isSameDirSymlink(f fs.DirEntry, dir string) bool { //nolint:unused
 	}
 	target, err := os.Readlink(filepath.Join(dir, f.Name()))
 	return err == nil && !strings.Contains(target, "/")
+}
+
+func parseDate(date string) (t time.Time, err error) {
+	t, err = time.Parse("2006-01-02", date)
+	if err != nil {
+		t, err = time.Parse("Jan _2, 2006", date)
+	}
+	if err != nil {
+		t, err = time.Parse("2006-1-2", date)
+	}
+	if err != nil {
+		t, err = time.Parse("January _2, 2006", date)
+	}
+	return t, err
 }
